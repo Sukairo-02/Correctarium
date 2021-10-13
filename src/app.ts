@@ -1,9 +1,13 @@
-import config from 'config'
-import express from 'express'
+const express = require('express')
+const config = require('config')
 
 const app = express()
 const PORT = process.env.PORT || config.get('server.PORT')
 
+const calculator = require('./routes/pricedeadline')
+
+app.use(express.json({ extended: true }))
+app.use('/calculator', calculator)
 const start = async () => {
 	try {
 		app.listen(PORT, () => {
@@ -13,3 +17,5 @@ const start = async () => {
 		console.log(e)
 	}
 }
+
+start()
