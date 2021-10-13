@@ -1,11 +1,6 @@
 import { RequestHandler } from 'express'
 const config = require('config')
 
-type corPrice = {
-	price: number
-	error?: string
-}
-
 type corDline = {
 	time: string
 	deadline: number
@@ -18,28 +13,26 @@ type reqType = {
 	count: number
 }
 
-function getPrice(lang: string, mType: string, letCnt: number): corPrice {
-	let result: corPrice = { price: 0 }
-	try {
-		const { pl: langPrice, min: minPrice } = config.get(`calc.lang.${lang}`)
-
-		const discTypes = config.get('calc.discTypes')
-		let typeMod: number = 1
-		if (!discTypes.find((a: string) => mType === a)) {
-			typeMod = config.get('calc.uTypesTax')
-		}
-
-		if (letCnt <= 0) {
-			result.error = 'Unacceptable amount of symbols!'
-			return result
-		}
-		const price = langPrice * typeMod * letCnt
-		result.price = price < minPrice ? minPrice : price
-		return result
-	} catch (e) {
-		result.error = 'Unsupported language!'
-		return result
+function getPrice(lang: string, mType: string, letCnt: number): number {
+	if (letCnt <= 0) {
+		throw 'Unacceptable amount of symbols!'
 	}
+
+	let pl: number, min: number
+	try {
+		;({ pl, min } = config.get(`calc.lang.${lang}`))
+	} catch (e) {
+		throw 'Unsupported language!'
+	}
+
+	const discTypes = config.get('calc.discTypes')
+	let typeMod: number = 1
+	if (!discTypes.find((a: string) => mType === a)) {
+		typeMod = config.get('calc.uTypesTax')
+	}
+	const price: number = pl * typeMod * letCnt
+	const result = price < min ? min : price
+	return result
 }
 
 // function getDeadline(): corDline {
@@ -52,9 +45,11 @@ class pdCalculator {
 			const reqData: reqType = (<any>req).body
 			const { language, mimetype, count } = reqData
 
-			const price: corPrice = getPrice(language, mimetype, count)
-			if (price.error) {
-				return res.status(400).json({ error: price.error })
+			let price: number
+			try {
+				price = getPrice(language, mimetype, count)
+			} catch (er) {
+				return res.status(403).json({ er })
 			}
 
 			return res.json(price)
