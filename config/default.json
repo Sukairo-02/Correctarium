@@ -1,5 +1,24 @@
 {
-    "server" : {
-       "PORT" : 3000 
-    }
+	"server": {
+		"PORT": 3000
+	},
+
+	"calc": {
+		"lang": {
+			"En": {
+				"pl": 12,
+				"min": 12000
+			},
+			"Ru": {
+				"pl": 5,
+				"min": 5000
+			},
+			"Uk": {
+				"pl": 5,
+				"min": 5000
+			}
+		},
+		"discTypes": ["doc", "docx", "rtf"],
+		"uTypesTax": 1.2
+	}
 }
