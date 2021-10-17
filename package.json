@@ -1,24 +1,25 @@
 {
-  "name": "Correctarium",
-  "version": "1.0.0",
-  "description": "",
-  "main": "compiled/app.js",
-  "scripts": {
-    "test": "nodemon app.ts",
-    "build": "npx tsc",
-    "start": "npx tsc && node compiled/app.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "config": "^3.3.6",
-    "express": "^4.17.1"
-  },
-  "devDependencies": {
-    "@types/express": "github:types/express",
-    "nodemon": "^2.0.13",
-    "tslint": "^6.1.3",
-    "typescript": "^4.4.4"
-  }
+	"name": "Correctarium",
+	"version": "1.0.0",
+	"description": "",
+	"main": "compiled/app.js",
+	"scripts": {
+		"test": "concurrently \"tsc --watch\" \"nodemon compiled/app.js\"",
+		"build": "npx tsc",
+		"start": "npx tsc && node compiled/app.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"config": "^3.3.6",
+		"express": "^4.17.1"
+	},
+	"devDependencies": {
+		"@types/express": "github:types/express",
+		"concurrently": "^6.3.0",
+		"nodemon": "^2.0.13",
+		"tslint": "^6.1.3",
+		"typescript": "^4.4.4"
+	}
 }
