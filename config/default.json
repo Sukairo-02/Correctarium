@@ -5,20 +5,27 @@
 
 	"calc": {
 		"lang": {
-			"En": {
+			"en": {
 				"pl": 12,
-				"min": 12000
+				"min": 12000,
+				"lph": 333
 			},
-			"Ru": {
+			"ru": {
 				"pl": 5,
-				"min": 5000
+				"min": 5000,
+				"lph": 1333
 			},
-			"Uk": {
+			"uk": {
 				"pl": 5,
-				"min": 5000
+				"min": 5000,
+				"lph": 1333
 			}
 		},
 		"discTypes": ["doc", "docx", "rtf"],
-		"uTypesTax": 1.2
+		"uTypesTax": 1.2,
+		"minTime": 3600000,
+		"timeZone": "Europe/Kiev",
+		"workTime": [10, 15],
+		"workDays": [1, 5]
 	}
 }
