@@ -24,6 +24,7 @@
 		"discTypes": ["doc", "docx", "rtf"],
 		"uTypesTax": 1.2,
 		"minTime": 3600000,
+		"timeZone": "Europe/Kiev",
 		"workTime": [10, 15],
 		"workDays": [1, 5]
 	}
