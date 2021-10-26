@@ -8,10 +8,10 @@ const pdClass = require('./classes/pricedeadlineClass')
 // 	"count": 10000
 // }
 //Output example: {
-// 	"price": 1000 //деньги
-// 	"time": 1 //часы,
-// 	"deadline": 1623822732 //UNIX таймстемп в секундах
-// 	"deadline_date": "10/10/2021 12:00:00"
+// 	"price": 3993996 //price, 100 stands for 1.00
+// 	"time": "999:59:54.594" //time taken to complete task
+// 	"deadline": 1675342794 //UNIX timestamp of deadline
+// 	"deadlineDate": "2023-02-02T12:59:54.594Z" //deadline in Date form
 // }
 router.post('/calculate', pdClass.calculate)
 
