@@ -37,6 +37,8 @@ class pdCalc {
 
 	private reqTime: Date
 
+	private typeMod: number
+
 	constructor(
 		lang: string,
 		mType: string,
@@ -64,6 +66,11 @@ class pdCalc {
 			throw 'Unacceptable amount of symbols!'
 		}
 		this.letCnt = letCnt
+		const discTypes = config.get('calc.discTypes')
+		this.typeMod = 1
+		if (!discTypes.find((a: string) => this.mType === a)) {
+			this.typeMod = config.get('calc.uTypesTax')
+		}
 		this.reqTime = reqTime || new Date()
 	}
 
@@ -137,17 +144,11 @@ class pdCalc {
 		}
 		const daysLeft = 1 + this.wDays[1] + 7 * +this.altDays - date.day()
 		if (daysLeft < toFill) {
-			this.tmp()
 			toFill -= daysLeft
 			date.add(daysLeft, 'd')
 			this.moveToWDay(date)
 		}
 		date.add(toFill, 'd')
-	}
-
-	private tmp() {
-		console.log('IWORK')
-		return true
 	}
 
 	//fill remaining time
@@ -179,14 +180,7 @@ class pdCalc {
 
 	public getPrice(): number {
 		let { pl, min } = this.lang
-
-		const discTypes = config.get('calc.discTypes')
-		let typeMod: number = 1
-		if (!discTypes.find((a: string) => this.mType === a)) {
-			typeMod = config.get('calc.uTypesTax')
-		}
-
-		const price: number = Math.round(pl * typeMod * this.letCnt)
+		const price: number = Math.round(pl * this.typeMod * this.letCnt)
 		const result = price < min ? min : price
 		return result
 	}
@@ -214,7 +208,9 @@ class pdCalc {
 		//calculate completion time
 		const minTime = config.get('calc.minTime')
 		const estTime =
-			(this.letCnt / this.lang.lph) * intTime.hour + 30 * intTime.minute
+			((this.letCnt / this.lang.lph) * intTime.hour +
+				30 * intTime.minute) *
+			this.typeMod
 		let finalTime = estTime < minTime ? minTime : estTime
 		const resTime = Math.floor(finalTime)
 		let fullDays = Math.floor(finalTime / (hpd * intTime.hour))
