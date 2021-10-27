@@ -161,7 +161,7 @@ class pdCalc {
 			this.moveToWTime(date)
 		}
 
-		const timeLeft =
+		let timeLeft =
 			this.wTime[1] * intTime.hour +
 			intTime.day * +this.altTime -
 			this.getMillisToday(date)
@@ -176,6 +176,31 @@ class pdCalc {
 		}
 
 		date.add(toFill, 'ms')
+	}
+
+	//if deadline points to beginning of workday, move it to the end of previous workday instead
+	private toEndTime(date: moment.Moment): moment.Moment {
+		if (this.getMillisToday(date) != this.wTime[0] * intTime.hour) {
+			return date
+		}
+
+		//getting the end of the last workday
+		const testDay = moment(date)
+			.add(-1, 'd')
+			.add(this.wTime[1] + 24 * +this.altTime - this.wTime[0], 'h')
+			.add(-1, 'ms')
+		if (!this.isWorkDay(testDay)) {
+			const sub =
+				testDay.day() +
+				7 * +(!this.altDays && testDay.day() < this.wDays[0]) -
+				this.wDays[1]
+			testDay.subtract(sub, 'd')
+			console.log(testDay.day(), 'is not a work day')
+		}
+
+		testDay.add(1, 'ms')
+		console.log(testDay)
+		return testDay
 	}
 
 	public getPrice(): number {
@@ -219,9 +244,10 @@ class pdCalc {
 		fullDays -= fullWeeks * dpw
 
 		//calculate deadline
-		this.fillWorkTime(dLine, finalTime)
-		this.fillWorkDays(dLine, fullDays)
 		dLine.add(fullWeeks, 'w')
+		this.fillWorkDays(dLine, fullDays)
+		this.fillWorkTime(dLine, finalTime)
+		dLine = this.toEndTime(dLine)
 
 		//final bits for 'time' field in return
 		const hours = Math.floor(resTime / intTime.hour)
