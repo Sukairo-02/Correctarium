@@ -50,7 +50,7 @@ class pdCalc {
 		//work days (0 - sunday, 6 - saturday)
 		this.wDays = wDays || config.get('calc.workDays')
 		//determining order of work days (ex: monday to friday - false, friday to monday - true)
-		this.altDays = this.wDays[1] < this.wDays[1]
+		this.altDays = this.wDays[1] < this.wDays[0]
 		//work time in hours
 		const tmpTime = wTime || config.get('calc.workTime')
 		this.wTime = [~~tmpTime[0], ~~tmpTime[1]]
@@ -94,12 +94,6 @@ class pdCalc {
 
 	private isWorkDay(date: moment.Moment): boolean {
 		const testable = moment(date)
-		if (
-			this.altTime &&
-			this.getMillisToday(date) < this.wTime[1] * intTime.hour
-		) {
-			testable.subtract(this.wTime[1], 'ms')
-		}
 		const day = testable.day()
 		return !(this.altDays
 			? day < this.wDays[0] && day > this.wDays[1]
@@ -137,12 +131,16 @@ class pdCalc {
 		 	'ms'
 		)*/
 		const tmp = moment(date)
-		if (!this.altTime && this.wTime[0] <= tmp.hour()) {
+		if (
+			this.altTime
+				? this.wTime[0] < tmp.hour()
+				: this.wTime[0] <= tmp.hour()
+		) {
 			tmp.add(1, 'd')
 		}
 		const target = moment(
 			tmp.toISOString(true).substr(0, 10) +
-				' ' +
+				'T' +
 				(this.wTime[0] < 10 ? '0' + this.wTime[0] : this.wTime[0]) +
 				':00:00'
 		)
@@ -155,7 +153,12 @@ class pdCalc {
 		if (!this.isWorkDay(date)) {
 			this.moveToWDay(date)
 		}
-		const daysLeft = 1 + this.wDays[1] + 7 * +this.altDays - date.day()
+		const daysLeft =
+			1 +
+			this.wDays[1] +
+			(this.altDays && date.day() >= this.wDays[0] ? 7 : 0) -
+			date.day()
+
 		if (daysLeft < toFill) {
 			toFill -= daysLeft
 			date.add(daysLeft, 'd')
@@ -237,7 +240,7 @@ class pdCalc {
 		const dpw =
 			1 +
 			(this.altDays
-				? 7 - this.wDays[0] + this.wDays[0]
+				? 7 - this.wDays[0] + this.wDays[1]
 				: this.wDays[1] - this.wDays[0])
 
 		//hours of work per day
