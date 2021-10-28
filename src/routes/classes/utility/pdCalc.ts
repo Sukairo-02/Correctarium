@@ -78,7 +78,7 @@ class pdCalc {
 	private getTotalMillis(date: moment.Moment): number {
 		return (
 			date.valueOf() +
-			(intTime.minute * date.utcOffset() - +!date.isDST() * intTime.hour)
+			(intTime.minute * date.utcOffset() - +date.isDST() * intTime.hour)
 		)
 	}
 
@@ -127,13 +127,26 @@ class pdCalc {
 	}
 
 	private moveToWTime(date: moment.Moment): boolean {
+		/*old method - could make DST change related erros
 		const today = this.getMillisToday(date)
+		
 		date.add(
-			this.wTime[0] * intTime.hour -
-				today +
-				intTime.day * +(today > this.wTime[0] * intTime.hour),
-			'ms'
+		 	this.wTime[0] * intTime.hour -
+		 		today +
+		 		intTime.day * +(today > this.wTime[0] * intTime.hour),
+		 	'ms'
+		)*/
+		const tmp = moment(date)
+		if (!this.altTime && this.wTime[0] <= tmp.hour()) {
+			tmp.add(1, 'd')
+		}
+		const target = moment(
+			tmp.toISOString(true).substr(0, 10) +
+				' ' +
+				(this.wTime[0] < 10 ? '0' + this.wTime[0] : this.wTime[0]) +
+				':00:00'
 		)
+		date.add(this.getTotalMillis(target) - this.getTotalMillis(date), 'ms')
 		return true
 	}
 
@@ -161,10 +174,14 @@ class pdCalc {
 			this.moveToWTime(date)
 		}
 
+		const today = this.getMillisToday(date)
 		let timeLeft =
 			this.wTime[1] * intTime.hour +
 			intTime.day * +this.altTime -
-			this.getMillisToday(date)
+			(this.altTime
+				? today +
+				  (today < this.wTime[1] * intTime.hour ? intTime.day : 0)
+				: today)
 
 		if (timeLeft < toFill) {
 			toFill -= timeLeft
@@ -195,11 +212,9 @@ class pdCalc {
 				7 * +(!this.altDays && testDay.day() < this.wDays[0]) -
 				this.wDays[1]
 			testDay.subtract(sub, 'd')
-			console.log(testDay.day(), 'is not a work day')
 		}
 
 		testDay.add(1, 'ms')
-		console.log(testDay)
 		return testDay
 	}
 
@@ -257,7 +272,16 @@ class pdCalc {
 
 		moment.tz.setDefault(origTimezone)
 		return {
-			time: '' + hours + ':' + minutes + ':' + seconds + '.' + millis,
+			time:
+				'' +
+				(hours < 10 ? '0' + hours : hours) +
+				':' +
+				(minutes < 10 ? '0' + minutes : minutes) +
+				':' +
+				(seconds < 10 ? '0' + seconds : seconds) +
+				'.' +
+				((millis < 100 ? '0' : '') +
+					(millis < 10 ? '0' + millis : millis)),
 			deadline: dLine.unix(),
 			deadlineDate: dLine.toDate(),
 		}
