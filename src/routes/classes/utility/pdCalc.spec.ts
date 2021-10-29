@@ -171,6 +171,19 @@ describe('Deadline tests [normal worktime, normal workdays]:', () => {
 			).getDeadline().deadlineDate
 		).toStrictEqual(moment('2021-07-02 12:45:00').toDate())
 	})
+
+	test('Move to and exceed worktime', () => {
+		expect(
+			new pdCalc(
+				'en',
+				'doc',
+				1665,
+				[10, 15],
+				[1, 5],
+				moment('2021-07-03 10:15:00').toDate()
+			).getDeadline().deadlineDate
+		).toStrictEqual(moment('2021-07-06 10:30:00').toDate())
+	})
 })
 
 describe('Deadline tests [alter worktime, normal workdays]:', () => {
@@ -272,6 +285,19 @@ describe('Deadline tests [alter worktime, normal workdays]:', () => {
 				moment('2021-07-02 23:15:00').toDate()
 			).getDeadline().deadlineDate
 		).toStrictEqual(moment('2021-07-03 00:45:00').toDate())
+	})
+
+	test('Move to and exceed worktime', () => {
+		expect(
+			new pdCalc(
+				'en',
+				'doc',
+				1665,
+				[22, 3],
+				[1, 5],
+				moment('2021-07-03 22:15:00').toDate()
+			).getDeadline().deadlineDate
+		).toStrictEqual(moment('2021-07-06 22:30:00').toDate())
 	})
 })
 
@@ -375,6 +401,19 @@ describe('Deadline tests [normal worktime, alter workdays]:', () => {
 			).getDeadline().deadlineDate
 		).toStrictEqual(moment('2021-07-02 12:45:00').toDate())
 	})
+
+	test('Move to and exceed worktime', () => {
+		expect(
+			new pdCalc(
+				'en',
+				'doc',
+				1665,
+				[22, 3],
+				[5, 2],
+				moment('2021-07-01 22:15:00').toDate()
+			).getDeadline().deadlineDate
+		).toStrictEqual(moment('2021-07-03 22:30:00').toDate())
+	})
 })
 
 describe('Deadline tests [alter worktime, alter workdays]:', () => {
@@ -476,5 +515,18 @@ describe('Deadline tests [alter worktime, alter workdays]:', () => {
 				moment('2021-07-02 23:15:00').toDate()
 			).getDeadline().deadlineDate
 		).toStrictEqual(moment('2021-07-03 00:45:00').toDate())
+	})
+
+	test('Move to and exceed worktime', () => {
+		expect(
+			new pdCalc(
+				'en',
+				'doc',
+				1665,
+				[22, 3],
+				[5, 2],
+				moment('2021-07-01 22:15:00').toDate()
+			).getDeadline().deadlineDate
+		).toStrictEqual(moment('2021-07-03 22:30:00').toDate())
 	})
 })
