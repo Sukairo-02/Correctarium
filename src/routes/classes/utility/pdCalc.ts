@@ -94,6 +94,9 @@ class pdCalc {
 
 	private isWorkDay(date: moment.Moment): boolean {
 		const testable = moment(date)
+		if (this.altTime && testable.hour() <= this.wTime[1]) {
+			testable.subtract(this.wTime[1], 'h')
+		}
 		const day = testable.day()
 		return !(this.altDays
 			? day < this.wDays[0] && day > this.wDays[1]
@@ -112,15 +115,14 @@ class pdCalc {
 	}
 
 	//moves date to beginning of workdays
-	private moveToWDay(date: moment.Moment): boolean {
+	private moveToWDay(date: moment.Moment) {
 		date.add(
 			this.wDays[0] - date.day() + 7 * +(date.day() >= this.wDays[0]),
 			'd'
 		)
-		return true
 	}
 
-	private moveToWTime(date: moment.Moment): boolean {
+	private moveToWTime(date: moment.Moment) {
 		/*old method - could make DST change related erros
 		const today = this.getMillisToday(date)
 		
@@ -131,11 +133,7 @@ class pdCalc {
 		 	'ms'
 		)*/
 		const tmp = moment(date)
-		if (
-			this.altTime
-				? this.wTime[0] < tmp.hour()
-				: this.wTime[0] <= tmp.hour()
-		) {
+		if (this.wTime[0] < tmp.hour()) {
 			tmp.add(1, 'd')
 		}
 		const target = moment(
@@ -145,11 +143,13 @@ class pdCalc {
 				':00:00'
 		)
 		date.add(this.getTotalMillis(target) - this.getTotalMillis(date), 'ms')
-		return true
 	}
 
 	//fill remaining full days
 	private fillWorkDays(date: moment.Moment, toFill: number) {
+		if (!this.isWorkDay(date)) {
+			this.moveToWTime(date)
+		}
 		if (!this.isWorkDay(date)) {
 			this.moveToWDay(date)
 		}
