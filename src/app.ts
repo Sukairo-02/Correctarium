@@ -1,21 +1,23 @@
-const express = require('express')
-const config = require('config')
+import express from 'express';
+import config from 'config';
 
-const app = express()
-const PORT = process.env.PORT || config.get('server.PORT')
+import calculator from './routes/pricedeadline';
 
-const calculator = require('./routes/pricedeadline')
+const app = express();
+const PORT = process.env.PORT || config.get('server.PORT');
 
-app.use(express.json({ extended: true }))
-app.use('/calculator', calculator)
+app.use((<any>express).json({ extended: true }));
+app.use('/calculator', calculator);
 const start = async () => {
 	try {
 		app.listen(PORT, () => {
-			console.log(`Server has been started at port ${PORT}.\n`)
-		})
+			console.log(`Server has been started at port ${PORT}.\n`);
+		});
 	} catch (e) {
-		console.log(e)
+		console.log(e);
 	}
-}
+};
 
-start()
+start();
+
+const some = 3;

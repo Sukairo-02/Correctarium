@@ -7,7 +7,9 @@
 		"dev": "concurrently \"tsc --watch\" \"nodemon compiled/app.js\"",
 		"test": "tsc && jest compiled/",
 		"build": "npx tsc",
-		"start": "npx tsc && node compiled/app.js"
+		"start": "npx tsc && node compiled/app.js",
+		"lint": "eslint ./src --format stylish --color",
+		"lint:fix": "eslint ./src --fix --format stylish --color"
 	},
 	"keywords": [],
 	"author": "",
@@ -23,11 +25,34 @@
 		"web-midi-api": "^2.1.2"
 	},
 	"devDependencies": {
+		"@types/config": "^0.0.40",
 		"@types/express": "github:types/express",
 		"@types/jest": "^27.0.2",
+		"@typescript-eslint/eslint-plugin": "^5.3.1",
+		"@typescript-eslint/parser": "^5.3.1",
+		"eslint": "^7.32.0",
+		"eslint-config-airbnb": "^19.0.0",
+		"eslint-config-airbnb-typescript": "^15.0.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-import": "^2.25.3",
+		"eslint-plugin-prettier": "^4.0.0",
+		"eslint-plugin-require": "^0.0.1",
+		"husky": "^7.0.4",
 		"jest": "^27.3.1",
+		"lint-staged": "^11.2.6",
 		"nodemon": "^2.0.13",
-		"tslint": "^6.1.3",
+		"prettier": "^2.4.1",
 		"typescript": "^4.4.4"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"*.ts": [
+			"npm run lint:fix",
+			"git add"
+		]
 	}
 }
